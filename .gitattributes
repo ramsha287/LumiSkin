@@ -1,4 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8e7d170c92ec89ee0a64162557290a77f821da6613ef9bdff697f54a052edb2c
-size 106
+ml_service/models/acne_model.h5
 *.h5 filter=lfs diff=lfs merge=lfs -text
