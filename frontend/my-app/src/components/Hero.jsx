@@ -36,7 +36,7 @@ export default function Hero() {
         </div>
 
         <Image
-          src="/home.png"
+          src="/public/home.png"
           alt="Model with glossy skin"
           fill
           className="object-cover object-top"
@@ -50,7 +50,7 @@ export default function Hero() {
         {/* LEFT SIDE DECORATION WITH TEXT */}
         <div className="hidden lg:flex flex-col items-center justify-center relative w-1/4">
           <Image
-            src="/Matte Lipstick.jpeg" // replace with your uploaded image path
+            src="/public/Matte Lipstick.jpeg" // replace with your uploaded image path
             alt="Decor Brush Left"
             width={180}
             height={180}
@@ -61,7 +61,7 @@ export default function Hero() {
         {/* Center image + cards */}
         <div className="relative w-[320px] h-[320px] flex justify-center items-center">
           <Image
-            src="/oval.png"
+            src="/public/oval.png"
             alt="Center Image"
             width={320}
             height={320}
@@ -107,7 +107,7 @@ export default function Hero() {
         {/* RIGHT SIDE DECORATION WITH TEXT */}
         <div className="hidden lg:flex flex-col items-center justify-center relative w-1/4">
           <Image
-            src="/Matte Lipstick.jpeg" // reuse or use another mark image
+            src="/public/Matte Lipstick.jpeg" // reuse or use another mark image
             alt="Decor Brush Right"
             width={180}
             height={180}
