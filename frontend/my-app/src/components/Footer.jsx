@@ -1,4 +1,5 @@
 "use client";
+import { Link } from "lucide-react";
 import React from "react";
 
 export default function Footer() {
@@ -18,12 +19,10 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between gap-10 text-sm text-gray-700 md:w-1/2">
           {/* Explore */}
           <div className="flex flex-col space-y-2">
-            <h5 className="font-bold text-gray-900">EXPLORE</h5>
-            <a href="#shop" className="hover:underline">Shop</a>
-            <a href="#philosophy" className="hover:underline">Philosophy</a>
-            <a href="#gallery" className="hover:underline">Gallery</a>
-            <a href="#journal" className="hover:underline">Journal</a>
-            <a href="#signup" className="hover:underline">Sign Up/Login</a>
+            <Link href="/login" className="hover:underline">Login</Link>
+            <Link href="/register" className="hover:underline">Register</Link>
+            <Link href="/analysis" className="hover:underline">DermaScan</Link>
+            <Link href="/routine" className="hover:underline">SkinRoutine</Link>
           </div>
 
           {/* Follow Us */}
@@ -40,7 +39,7 @@ export default function Footer() {
           {/* Contact Us */}
           <div className="flex flex-col space-y-2">
             <h5 className="font-bold text-gray-900">CONTACT US</h5>
-            <a href="mailto:tk@brandsofsbia.com" className="hover:underline">tk@brandsofsbia.com</a>
+            <a href="mailto:tk@brandsofsbia.com" className="hover:underline">lumiskin@brandofskincare.com</a>
             <a href="tel:1112222333" className="hover:underline">111-222-2333</a>
           </div>
         </div>
