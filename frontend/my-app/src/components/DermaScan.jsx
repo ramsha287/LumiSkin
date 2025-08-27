@@ -74,11 +74,10 @@ export default function DermaScan() {
       {/* Form Section */}
       <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto items-center">
         <div className="lg:w-1/2 relative w-full h-80 lg:h-[400px]">
-          <Image
+          <img
             src="/skin1.jpeg"
             alt="Skin Model 1"
-            fill
-            className="object-cover shadow-lg"
+            className="w-full h-fullobject-cover shadow-lg"
           />
         </div>
 
@@ -248,11 +247,10 @@ export default function DermaScan() {
 
           {/* Right Column: Skin2 Image */}
           <div className="lg:w-1/2 relative w-full h-80 lg:h-[400px]">
-            <Image
+            <img
               src="/skin2.jpeg"
               alt="Skin Model 2"
-              fill
-              className="object-cover shadow-lg rounded-2xl"
+              className="w-full h-full object-cover shadow-lg rounded-2xl"
             />
           </div>
         </div>

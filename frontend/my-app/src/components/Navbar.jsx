@@ -8,7 +8,6 @@ import { logout } from "../store/authSlice";
 import { User, Menu, X } from "lucide-react";
 import { Playfair_Display } from "next/font/google";
 import { Great_Vibes } from "next/font/google";
-import Image from "next/image";
 
 const playfair = Playfair_Display({
   weight: "700",
