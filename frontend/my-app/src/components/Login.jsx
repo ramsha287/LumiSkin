@@ -39,7 +39,7 @@ const Login = () => {
       <div
         className="relative z-10 w-full max-w-md rounded-3xl shadow-xl p-8 bg-white/70 backdrop-blur-md border border-white/30"
         style={{
-          backgroundImage: "url('/auth.jpeg')",
+          backgroundImage: "url('/images/auth.jpeg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           boxShadow:

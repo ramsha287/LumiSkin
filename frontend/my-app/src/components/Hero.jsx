@@ -17,9 +17,17 @@ export default function Hero() {
     <div className="relative w-full min-h-[600px]">
       {/* Hero section with background */}
       <div className="relative w-full min-h-[400px] flex items-center justify-center">
-        <div className="z-10 flex flex-col items-center text-center space-y-2 relative">
+        {/* Background image */}
+        <img
+          src="/images/home.png"
+          alt="Model with glossy skin"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+
+        {/* Text content */}
+        <div className="z-10 flex flex-col items-center text-center space-y-2">
           <h1
-            className={`${playfair.className} text-5xl md:text-7xl font-bold text-white drop-shadow-lg relative -left-10 shiny-effect`}
+            className={`${playfair.className} text-5xl md:text-7xl font-bold text-white drop-shadow-lg shiny-effect`}
           >
             Let's
           </h1>
@@ -29,26 +37,20 @@ export default function Hero() {
             Glow
           </h1>
           <h1
-            className={`${playfair.className} text-5xl md:text-7xl font-bold text-white drop-shadow-lg relative -right-10 shiny-effect`}
+            className={`${playfair.className} text-5xl md:text-7xl font-bold text-white drop-shadow-lg shiny-effect`}
           >
             Girls
           </h1>
         </div>
-
-        <img
-          src="/images/home.png"
-          alt="Model with glossy skin"
-          className="w-full h-full object-cover object-top"
-        />
-
       </div>
+
 
       {/* Center oval image with surrounding cards + side text */}
       <div className="relative flex flex-col lg:flex-row justify-center items-center my-16 lg:space-x-20">
 
         {/* LEFT SIDE DECORATION WITH TEXT */}
         <div className="hidden lg:flex flex-col items-center justify-center relative w-1/4">
-          <Image
+          <img
             src="/images/Matte Lipstick.jpeg" // replace with your uploaded image path
             alt="Decor Brush Left"
             width={180}
