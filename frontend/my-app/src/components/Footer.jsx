@@ -8,7 +8,7 @@ export default function Footer() {
         {/* Image side */}
         <div className="flex-shrink-0 md:w-1/2">
           <img
-            src="/footer.jpeg" // Your image path
+            src="/images/footer.jpeg" // Your image path
             alt="true.Kind Logo"
             className="w-full h-auto object-cover rounded-lg"
           />
