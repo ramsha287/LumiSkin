@@ -35,13 +35,12 @@ export default function Hero() {
           </h1>
         </div>
 
-        <Image
+        <img
           src="/images/home.png"
           alt="Model with glossy skin"
-          fill
-          className="object-cover object-top"
-          priority
+          className="w-full h-full object-cover object-top"
         />
+
       </div>
 
       {/* Center oval image with surrounding cards + side text */}
@@ -60,13 +59,14 @@ export default function Hero() {
 
         {/* Center image + cards */}
         <div className="relative w-[320px] h-[320px] flex justify-center items-center">
-          <Image
+          <img
             src="/images/oval.png"
             alt="Center Image"
             width={320}
             height={320}
             className="object-contain"
           />
+
 
           {/* Cards around the image */}
           <div className="absolute -top-0 -left-28">
@@ -106,7 +106,7 @@ export default function Hero() {
 
         {/* RIGHT SIDE DECORATION WITH TEXT */}
         <div className="hidden lg:flex flex-col items-center justify-center relative w-1/4">
-          <Image
+          <img
             src="/images/Matte Lipstick.jpeg" // reuse or use another mark image
             alt="Decor Brush Right"
             width={180}
