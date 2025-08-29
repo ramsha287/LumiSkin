@@ -1,3 +1,16 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2a49fde5ff50ad17f057a5dd919b70cf57805d04d7bc1e9e19301ff37d9da485
-size 430
+// routes/progressRoutes.js
+import express from "express";
+import Progress from "../models/Tracking.js";
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+  const progress = await Progress.create(req.body);
+  res.json(progress);
+});
+
+router.get("/:routineId", async (req, res) => {
+  const entries = await Progress.find({ routineId: req.params.routineId });
+  res.json(entries);
+});
+
+export default router;

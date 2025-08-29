@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:aa50a92e9da891a0b3fe5be6d101c65825fecc9c0aec86cdb8efa2910b236778
-size 462
+// models/Progress.js
+import mongoose from "mongoose";
+
+const progressSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  routineId: { type: mongoose.Schema.Types.ObjectId, ref: "Routine" },
+  photo : { 
+    data: Buffer,
+    contentType: String
+   }, 
+  analysis: Object,   // reuse saved analysis (pores, acne, skin tone, etc.)
+}, { timestamps: true });
+
+export default mongoose.model("Progress", progressSchema);
