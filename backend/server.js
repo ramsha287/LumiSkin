@@ -74,3 +74,5 @@ app.use("*", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 LumiSkin Backend running on port ${PORT}`);
 });
+
+module.exports = app;
