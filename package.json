@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fb5b707f92b296e15bfeeed6fbc6a78d94bafa58b69b4305289675ed3e6bfba5
-size 57
+{
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
