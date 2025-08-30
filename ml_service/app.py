@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, UploadFile, File, Form, Header, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,7 +44,7 @@ origins = [
 # Allow frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["https://lumiskin-skincare.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
