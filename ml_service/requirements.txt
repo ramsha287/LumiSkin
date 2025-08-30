@@ -11,5 +11,3 @@ pydantic>=2.0.0
 pymongo
 PyJWT
 pandas
-bson
-jwt
