@@ -1,7 +1,8 @@
+**LumiSkin** – Transform your skincare routine with AI-powered insights ✨
+
 # 🌟 LumiSkin - AI-Powered Skincare Analysis Platform
 
-A comprehensive **MERN + Python microservice** application that provides AI-powered skin analysis, personalized recommendations, and skincare tracking.
-
+A comprehensive Next.js + Express + Node.js + MongoDB + FastAPI (Python ML) application that provides AI-powered skin analysis, personalized recommendations, and skincare tracking.
 ---
 
 ## ✨ Features
@@ -18,7 +19,9 @@ A comprehensive **MERN + Python microservice** application that provides AI-powe
 
 ### 🔹 Frontend
 
-* **Modern UI** – Responsive design with TailwindCSS
+* **Modern UI** – Built with Next.js + TailwindCSS
+* **Server-Side Rendering (SSR)** – SEO-friendly and fast
+* **API Integration** – Optimized data fetching with Axios
 * **Real-time Analysis** – Instant AI analysis with visual results
 * **Mobile Responsive** – Optimized for all devices
 
@@ -41,12 +44,11 @@ LumiSkin/
 │   ├── models/              # MongoDB schemas
 │   ├── middleware/          # Auth & upload middleware
 │   └── utils/               # Helper functions
-├── frontend/                # React + Redux app
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── services/        # API service calls
-│   │   └── store/           # Redux state management
+├── frontend/                # Next.js + Redux app
+│   ├── app/ or pages/       # Next.js routing (App Router or Pages Router)
+│   ├── components/          # Reusable UI components
+│   ├── services/            # API service calls
+│   └── store/               # Redux state management
 └── ml-service/              # Python FastAPI ML service
     ├── utils/               # ML utilities
     └── models/              # Pre-trained CNN models
@@ -57,14 +59,16 @@ LumiSkin/
 ## 🛠️ Tech Stack
 
 ### Backend
-`Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `Multer` · `bcryptjs`  
+
+`Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `Multer` · `bcryptjs`
 
 ### Frontend
-`Next.js` · `Redux Toolkit` · `TailwindCSS` · `Axios` · `React Dropzone` · `Lucide React`  
+
+`Next.js` · `Redux Toolkit` · `TailwindCSS` · `Axios` · `React Dropzone` · `Lucide React`
 
 ### ML Service
-`FastAPI` · `Uvicorn` · `TensorFlow` · `OpenCV` · `NumPy` · `Pillow` · `Pydantic`  
 
+`FastAPI` · `Uvicorn` · `TensorFlow` · `OpenCV` · `NumPy` · `Pydantic`
 
 ---
 
@@ -100,17 +104,17 @@ JWT_SECRET=your-secret-key
 ML_SERVICE_URL=http://localhost:8000
 ```
 
-### 3. Frontend Setup
+### 3. Frontend Setup (Next.js)
 
 ```bash
 cd frontend
 npm install
 ```
 
-Create a `.env` file:
+Create a `.env.local` file (Next.js convention):
 
 ```env
-REACT_APP_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
 ### 4. ML Service Setup
@@ -154,12 +158,14 @@ mongod
    uvicorn app:app --reload --host 0.0.0.0 --port 8000
    ```
 
-4. **Start Frontend**
+4. **Start Frontend (Next.js)**
 
    ```bash
    cd frontend
    npm run dev
    ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Production Mode
 
@@ -184,6 +190,13 @@ mongod
    uvicorn app:app --host 0.0.0.0 --port 8000
    ```
 
+4. **Start Frontend**
+
+   ```bash
+   cd frontend
+   npm start
+   ```
+
 ---
 
 ## 📖 Usage
@@ -201,7 +214,6 @@ mongod
 * **Skin Analysis** – Upload photos & get severity levels + confidence scores
 * **Recommendations** – Product suggestions + ingredient safety checks
 * **Progress Tracking** – Before/after comparisons & health trends
-* **AI Chatbot** – Ask skincare questions & get tailored advice
 
 ---
 
@@ -280,7 +292,7 @@ MIT License – see [LICENSE](LICENSE)
 
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [TensorFlow](https://www.tensorflow.org/)
-* [React](https://react.dev/)
+* [Next.js](https://nextjs.org/)
 * [MongoDB](https://www.mongodb.com/)
 * All contributors & supporters
 
