@@ -77,7 +77,7 @@ export default function DermaScan() {
           <img
             src="/images/skin1.jpeg"
             alt="Skin Model 1"
-            className="w-full h-fullobject-cover shadow-lg"
+            className="w-full h-[400px] object-cover shadow-lg"
           />
         </div>
 
@@ -250,7 +250,7 @@ export default function DermaScan() {
             <img
               src="/images/skin2.jpeg"
               alt="Skin Model 2"
-              className="w-full h-full object-cover shadow-lg rounded-2xl"
+              className="w-full h-[400px] object-cover shadow-lg rounded-2xl"
             />
           </div>
         </div>
