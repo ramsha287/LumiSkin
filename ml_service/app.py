@@ -106,13 +106,13 @@ async def analyze(
     try:
         # Save temporary file
         
-        image_bytes = await file.read()
-        if not image_bytes:
-            raise HTTPException(status_code=400, detail="Empty file")
+        # image_bytes = await file.read()
+        # if not image_bytes:
+        #     raise HTTPException(status_code=400, detail="Empty file")
 
         # Save temp file
-        with open(temp_file_path, "wb") as f:
-            f.write(image_bytes)
+        # with open(temp_file_path, "wb") as f:
+        #     f.write(image_bytes)
 
         # Validate that the image can be read
         import cv2
@@ -154,7 +154,7 @@ async def analyze(
             "recommended_ingredients": [to_python(i) for i in ingredients_to_use],
             "recommended_products": [{k: to_python(v) for k, v in product.items()} for product in top_products_dicts],
             "created_at": datetime.utcnow(),
-            "image": Binary(image_bytes),
+            # "image": Binary(image_bytes),
             "image_content_type": file.content_type,
         }
         logger.debug(f"Response to be stored: {response}")
