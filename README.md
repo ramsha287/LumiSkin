@@ -201,7 +201,6 @@ mongod
 * **Skin Analysis** – Upload photos & get severity levels + confidence scores
 * **Recommendations** – Product suggestions + ingredient safety checks
 * **Progress Tracking** – Before/after comparisons & health trends
-* **AI Chatbot** – Ask skincare questions & get tailored advice
 
 ---
 
