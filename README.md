@@ -15,14 +15,11 @@ A comprehensive **MERN + Python microservice** application that provides AI-powe
 * **Routine Management** – Create, view, and edit personalized skincare routines
 * **Progress Tracking** – Store before/after photos and monitor improvements
 * **Ingredient Check** – Detect harmful ingredients & suggest alternatives
-* **AI Chatbot** – Personalized skincare guidance
 
 ### 🔹 Frontend
 
 * **Modern UI** – Responsive design with TailwindCSS
 * **Real-time Analysis** – Instant AI analysis with visual results
-* **Interactive Dashboard** – Comprehensive skin health overview
-* **Progress Visualization** – Charts & graphs for skin improvements
 * **Mobile Responsive** – Optimized for all devices
 
 ### 🔹 ML Service
@@ -60,16 +57,14 @@ LumiSkin/
 ## 🛠️ Tech Stack
 
 ### Backend
-
-`Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `Multer` · `bcryptjs`
+`Node.js` · `Express.js` · `MongoDB` · `Mongoose` · `JWT` · `Multer` · `bcryptjs`  
 
 ### Frontend
-
-`React` · `Redux Toolkit` · `React Router` · `TailwindCSS` · `Axios` · `React Dropzone` · `Lucide React`
+`Next.js` · `Redux Toolkit` · `TailwindCSS` · `Axios` · `React Dropzone` · `Lucide React`  
 
 ### ML Service
+`FastAPI` · `Uvicorn` · `TensorFlow` · `OpenCV` · `NumPy` · `Pillow` · `Pydantic`  
 
-`FastAPI` · `Uvicorn` · `TensorFlow` · `OpenCV` · `NumPy` · `Pillow` · `Pydantic`
 
 ---
 
