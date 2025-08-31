@@ -9,10 +9,11 @@ from dotenv import load_dotenv, find_dotenv
 from datetime import datetime
 from bson import ObjectId, Binary
 import jwt
-from utils.test import build_skin_profile, get_ingredients, recommend_products, knowledge_base, products, predict_skin_attributes
+from .utils.test import build_skin_profile, get_ingredients, recommend_products, knowledge_base, products, predict_skin_attributes
 import logging
 from fastapi import Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 
 
 logger = logging.getLogger("auth")
