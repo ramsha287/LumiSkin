@@ -22,6 +22,24 @@ bearer_scheme = HTTPBearer()
 
 app = FastAPI()
 
+origins = [
+    "https://lumiskin-skincare.netlify.app",
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000",
+
+]
+
+
+# Allow frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://lumiskin-skincare.netlify.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 # Load env
 load_dotenv(dotenv_path="ml_service/.env")
 MONGO_URL = os.getenv("MONGO_URL")
@@ -34,21 +52,7 @@ client = MongoClient(MONGO_URL)
 db = client[MONGO_DB]
 collection = db[MONGO_COLLECTION]
 
-origins = [
-    "https://lumiskin-skincare.netlify.app",
-    "http://localhost:3000", 
-    "http://127.0.0.1:3000",
 
-]
-
-# Allow frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://lumiskin-skincare.netlify.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 def to_python(obj):
     if isinstance(obj, (np.int64, np.int32)):
