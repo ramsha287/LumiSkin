@@ -12,3 +12,4 @@ pymongo
 PyJWT
 pandas
 gdown
+huggingface_hub
