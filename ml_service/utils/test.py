@@ -65,7 +65,7 @@ pigmentation_model_path = hf_hub_download(
 )
 skintone_model_path = hf_hub_download(
     repo_id="ramsha01/skin-analyzer-model",
-    filename="skintone_model.h5",
+    filename="skintone.h5",
     token=os.getenv("HF_token")  # use token if private
 )
 
