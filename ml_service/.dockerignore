@@ -1,0 +1,15 @@
+.git
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pickle
+*.pkl
+frontend/
+node_modules/
+*.log
