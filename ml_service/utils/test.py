@@ -238,7 +238,6 @@
 #     "budget": 1500,
 #     "preferences": ["fragrance-free"]
 # }
-
 import os
 import numpy as np
 import pandas as pd
@@ -248,81 +247,75 @@ from huggingface_hub import hf_hub_download
 from functools import lru_cache
 from dotenv import load_dotenv
 
-# Load env (if needed)
+# Load env
 load_dotenv(dotenv_path="ml_service/.env")
 
-# HuggingFace public repo
 HF_REPO = "ramsha01/skin-analyzer-model"
 
 
 # --------------------------------------------------------
-# 1. Lazy-load models (correct approach for Render)
+# 1. Lazy-load models from HuggingFace
 # --------------------------------------------------------
 @lru_cache(maxsize=None)
 def get_model(filename: str):
-    """
-    Downloads the model from HuggingFace ONCE and loads it ONCE.
-    Render-friendly: No loading at import-time.
-    """
+    """Downloads and loads model only once (Render-friendly)."""
     model_path = hf_hub_download(
         repo_id=HF_REPO,
         filename=filename,
-        token=None   # MUST be None → repo must be PUBLIC
+        token=None   # MUST be public repo
     )
-    model = tf.keras.models.load_model(model_path, compile=False)
-    return model
+    return tf.keras.models.load_model(model_path, compile=False)
 
 
 # --------------------------------------------------------
 # 2. Preprocess input image
 # --------------------------------------------------------
-def preprocess_selfie(img_path):
-    img = load_img(img_path, target_size=(224,224))
-    img_array = img_to_array(img) / 255.0
-    return np.expand_dims(img_array, axis=0)
+def preprocess_image(img_path):
+    img = load_img(img_path, target_size=(224, 224))
+    img = img_to_array(img) / 255.0
+    return np.expand_dims(img, axis=0)
 
 
 # --------------------------------------------------------
 # 3. Predict skin attributes
 # --------------------------------------------------------
-def predict_skin_attributes(image_path: str) -> dict:
-    img = preprocess_selfie(image_path)
+def predict_skin_attributes(img_path: str) -> dict:
+    img = preprocess_image(img_path)
 
-    # Lazy loaded models
     wrinkle_model = get_model("wrinkle.h5")
     acne_model = get_model("acne_model.h5")
     pigmentation_model = get_model("pigmentation.h5")
     skintone_model = get_model("skintone.h5")
 
-    wrinkles_pred = bool((wrinkle_model.predict(img)[0][0] > 0.5).item())
-    acne_pred = bool((acne_model.predict(img)[0][0] > 0.5).item())
-    pigmentation_pred = bool((pigmentation_model.predict(img)[0][0] > 0.5).item())
+    wrinkles = bool((wrinkle_model.predict(img)[0][0] > 0.5).item())
+    acne = bool((acne_model.predict(img)[0][0] > 0.5).item())
+    hyperpig = bool((pigmentation_model.predict(img)[0][0] > 0.5).item())
 
-    skintone_idx = int(np.argmax(skintone_model.predict(img)[0]))
-    skintone_labels = ["fair", "medium", "dark"]
-    skintone_pred = skintone_labels[skintone_idx]
+    tone_idx = int(np.argmax(skintone_model.predict(img)[0]))
+    tone_labels = ["fair", "medium", "dark"]
+    skin_tone = tone_labels[tone_idx]
 
     return {
-        "wrinkles": wrinkles_pred,
-        "acne": acne_pred,
-        "hyperpigmentation": pigmentation_pred,
-        "skin_tone": skintone_pred
+        "wrinkles": wrinkles,
+        "acne": acne,
+        "hyperpigmentation": hyperpig,
+        "skin_tone": skin_tone
     }
 
 
 # --------------------------------------------------------
-# 4. User quiz + Model predictions → Profile
+# 4. Combine User Quiz + Model predictions
 # --------------------------------------------------------
 def build_skin_profile(img_path, user_quiz):
     profile = user_quiz.copy()
-    model_attrs = predict_skin_attributes(img_path)
-    profile.update(model_attrs)
+    predictions = predict_skin_attributes(img_path)
+    profile.update(predictions)
     return profile
 
 
-# -------------------------
-# 5. Knowledge base
-# -------------------------
+# --------------------------------------------------------
+# 5. Knowledge Base (Dermatology Ingredients)
+# --------------------------------------------------------
 knowledge_base = {
     "wrinkles": {
         "ingredients": ["retinol", "peptides", "bakuchiol", "hyaluronic acid", "vitamin C"],
@@ -344,47 +337,36 @@ knowledge_base = {
         "ingredients": ["centella asiatica", "panthenol", "niacinamide", "colloidal oatmeal", "azelaic acid"],
         "avoid_if_sensitive": ["fragrance", "alcohol", "menthol"]
     },
-    "sensitive_skin": {
-        "ingredients": ["aloe vera", "oat extract", "squalane", "panthenol"],
-        "avoid_if_sensitive": ["fragrance", "essential oils", "strong acids"]
-    },
-    "dullness": {
-        "ingredients": ["vitamin C", "glycolic acid", "niacinamide", "licorice extract"],
-        "avoid_if_sensitive": ["high % acids", "strong exfoliants"]
-    },
-    "uneven_tone": {
-        "ingredients": ["niacinamide", "alpha arbutin", "kojic acid", "vitamin C"],
-        "avoid_if_sensitive": ["strong acids", "hydroquinone"]
-    },
     "oiliness": {
         "ingredients": ["niacinamide", "salicylic acid", "zinc", "kaolin clay"],
         "avoid_if_sensitive": ["strong acids", "alcohol-based toners"]
     }
 }
 
+
 # --------------------------------------------------------
-# 6. Get ingredients
+# 6. Ingredient Recommendation Logic
 # --------------------------------------------------------
-def get_ingredients(profile, knowledge_base):
+def get_ingredients(profile, kb):
     recommended = []
 
-    for concern, info in knowledge_base.items():
-        if profile.get(concern):
+    for concern, info in kb.items():
+        if profile.get(concern):  # concern is True
             if profile.get("sensitivity") == "high":
                 safe = [
                     ing for ing in info["ingredients"]
                     if ing not in info["avoid_if_sensitive"]
                 ]
-                recommended.extend(safe)
+                recommended += safe
             else:
-                recommended.extend(info["ingredients"])
+                recommended += info["ingredients"]
 
-    return list(set(recommended))
+    return list(set(recommended))  # unique
 
 
-# -------------------------
-# 7. Dummy product dataset
-# -------------------------
+# --------------------------------------------------------
+# 7. Sample Products
+# --------------------------------------------------------
 products = pd.DataFrame([
     {"name":"The Ordinary Retinol 0.5%", "ingredients":["retinol"], "price":750, "rating":4.5, "preferences":["fragrance-free"]},
     {"name":"Minimalist Peptide Serum", "ingredients":["peptides"], "price":1050, "rating":4.2, "preferences":["vegan"]},
@@ -406,101 +388,17 @@ products = pd.DataFrame([
     {"name":"Salicylic Acid Spot Treatment", "ingredients":["salicylic acid"], "price":299, "rating":4.3, "preferences":[]},
 ])
 
-# -------------------------
-# 4. Preprocess selfie
-# -------------------------
-def preprocess_selfie(img_path):
-    img = image.load_img(img_path, target_size=(224,224))
-    img_array = image.img_to_array(img)/255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
 
-# -------------------------
-# 5. Predict all concerns
-# -------------------------
-# def predict_skin_attributes(img_path):
-#     img_array = preprocess_selfie(img_path)
-    
-#     profile = {}
-#     profile['wrinkles'] = wrinkle_model.predict(img_array)[0][0] > 0.5
-#     profile['acne'] = acne_model.predict(img_array)[0][0] > 0.5
-#     profile['hyperpigmentation'] = pigmentation_model.predict(img_array)[0][0] > 0.5
-    
-#     # Assume skintone_model outputs classes like ['fair', 'medium', 'tan', 'dark']
-#     skintone_class = np.argmax(skintone_model.predict(img_array), axis=1)[0]
-#     skin_tone_mapping = ['fair','medium','tan','dark']
-#     profile['skin_tone'] = skin_tone_mapping[skintone_class]
-    
-#     return profile
+# --------------------------------------------------------
+# 8. Product Recommendation
+# --------------------------------------------------------
+def recommend_products(profile, ingredients, df):
+    df = df[df["ingredients"].apply(lambda ing: any(i in ingredients for i in ing))]
+    df = df[df["price"] <= profile.get("budget", 5000)]
 
-def predict_skin_attributes(image_path: str) -> dict:
-    img = load_img(image_path, target_size=(224, 224))
-    img_array = img_to_array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
+    # filter by user preferences
+    prefs = profile.get("preferences", [])
+    if prefs:
+        df = df[df["preferences"].apply(lambda p: all(x in p for x in prefs) or not p)]
 
-    wrinkles_pred = bool((wrinkle_model.predict(img_array)[0][0] > 0.5).item())
-    acne_pred = bool((acne_model.predict(img_array)[0][0] > 0.5).item())
-    pigmentation_pred = bool((pigmentation_model.predict(img_array)[0][0] > 0.5).item())
-
-    skintone_idx = int(np.argmax(skintone_model.predict(img_array)[0]))
-    skintone_labels = ["fair", "medium", "dark"]
-    skintone_pred = skintone_labels[skintone_idx]
-
-    return {
-        "wrinkles": wrinkles_pred,
-        "acne": acne_pred,
-        "hyperpigmentation": pigmentation_pred,
-        "skin_tone": skintone_pred
-    }
-
-
-# -------------------------
-# 6. Merge with user quiz
-# -------------------------
-def build_skin_profile(img_path, user_quiz):
-    profile = user_quiz.copy()
-    model_attrs = predict_skin_attributes(img_path)
-    profile.update(model_attrs)
-    return profile
-
-# -------------------------
-# 7. Map profile to recommended ingredients
-# -------------------------
-def get_ingredients(profile, knowledge_base):
-    recommended = []
-    for concern, info in knowledge_base.items():
-        if profile.get(concern):
-            if profile.get('sensitivity') == 'high':
-                safe_ings = [i for i in info['ingredients'] if i not in info['avoid_if_sensitive']]
-                recommended.extend(safe_ings)
-            else:
-                recommended.extend(info['ingredients'])
-    return list(set(recommended))
-
-# -------------------------
-# 8. Recommend products
-# -------------------------
-def recommend_products(profile, ingredients, products_df):
-    filtered = products_df.copy()
-    filtered = filtered[filtered['ingredients'].apply(lambda x: any(i in ingredients for i in x))]
-    filtered = filtered[filtered['price'] <= profile.get('budget', 20000)]
-    
-    user_prefs = profile.get('preferences', [])
-    if user_prefs:
-        filtered = filtered[filtered['preferences'].apply(lambda x: all(p in x for p in user_prefs) or not x)]
-    
-    filtered = filtered.sort_values(by='rating', ascending=False)
-    return filtered.head(5)
-
-# -------------------------
-# 9. Example Usage
-# -------------------------
-user_quiz = {
-    "dryness": False,
-    "redness": False,
-    "skin_type": "oily",
-    "sensitivity": "mild",
-    "budget": 1500,
-    "preferences": ["fragrance-free"]
-}
-
+    return df.sort_values("rating", ascending=False).head(5)
