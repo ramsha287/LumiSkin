@@ -241,80 +241,101 @@
 import os
 import numpy as np
 import pandas as pd
-import tensorflow as tf
+import tensorflow.lite as tflite  # TFLITE INSTEAD OF TENSORFLOW
 from tensorflow.keras.utils import load_img, img_to_array
 from huggingface_hub import hf_hub_download
 from functools import lru_cache
 from dotenv import load_dotenv
 
-# Load env
+# Load environment variables
 load_dotenv(dotenv_path="ml_service/.env")
 
-HF_REPO = "ramsha01/skin-analyzer-model"
+HF_REPO = "ramsha01/skin-analyzer-model"   # your HF repo
 
 
 # --------------------------------------------------------
-# 1. Lazy-load models from HuggingFace
+# 1. TFLite lazy loader
 # --------------------------------------------------------
 @lru_cache(maxsize=None)
-def get_model(filename: str):
-    """Downloads and loads model only once (Render-friendly)."""
+def load_tflite_model(filename: str):
+    """
+    Downloads the TFLite model from HuggingFace and loads it ONCE.
+    Works on Render Free Tier (low RAM).
+    """
     model_path = hf_hub_download(
         repo_id=HF_REPO,
         filename=filename,
-        token=None   # MUST be public repo
+        token=None  # must be public repo
     )
-    return tf.keras.models.load_model(model_path, compile=False)
+
+    interpreter = tflite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+
+    return interpreter
 
 
 # --------------------------------------------------------
-# 2. Preprocess input image
+# 2. Preprocess image
 # --------------------------------------------------------
 def preprocess_image(img_path):
     img = load_img(img_path, target_size=(224, 224))
     img = img_to_array(img) / 255.0
-    return np.expand_dims(img, axis=0)
+    return np.expand_dims(img, axis=0).astype(np.float32)
 
 
 # --------------------------------------------------------
-# 3. Predict skin attributes
+# 3. Helper to run TFLite model
+# --------------------------------------------------------
+def run_tflite(interpreter, input_data):
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    interpreter.set_tensor(input_details[0]['index'], input_data)
+    interpreter.invoke()
+
+    return interpreter.get_tensor(output_details[0]['index'])
+
+
+# --------------------------------------------------------
+# 4. Predict skin attributes
 # --------------------------------------------------------
 def predict_skin_attributes(img_path: str) -> dict:
     img = preprocess_image(img_path)
 
-    wrinkle_model = get_model("wrinkle.h5")
-    acne_model = get_model("acne_model.h5")
-    pigmentation_model = get_model("pigmentation.h5")
-    skintone_model = get_model("skintone.h5")
+    wrinkle = load_tflite_model("wrinkle.tflite")
+    acne = load_tflite_model("acne_model.tflite")
+    pigmentation = load_tflite_model("pigmentation.tflite")
+    skintone = load_tflite_model("skintone.tflite")
 
-    wrinkles = bool((wrinkle_model.predict(img)[0][0] > 0.5).item())
-    acne = bool((acne_model.predict(img)[0][0] > 0.5).item())
-    hyperpig = bool((pigmentation_model.predict(img)[0][0] > 0.5).item())
+    wrinkle_pred = run_tflite(wrinkle, img)[0][0] > 0.5
+    acne_pred = run_tflite(acne, img)[0][0] > 0.5
+    pigmentation_pred = run_tflite(pigmentation, img)[0][0] > 0.5
 
-    tone_idx = int(np.argmax(skintone_model.predict(img)[0]))
+    tone_logits = run_tflite(skintone, img)[0]
+    tone_idx = int(np.argmax(tone_logits))
     tone_labels = ["fair", "medium", "dark"]
     skin_tone = tone_labels[tone_idx]
 
     return {
-        "wrinkles": wrinkles,
-        "acne": acne,
-        "hyperpigmentation": hyperpig,
+        "wrinkles": bool(wrinkle_pred),
+        "acne": bool(acne_pred),
+        "hyperpigmentation": bool(pigmentation_pred),
         "skin_tone": skin_tone
     }
 
 
 # --------------------------------------------------------
-# 4. Combine User Quiz + Model predictions
+# 5. Combine quiz + model predictions
 # --------------------------------------------------------
 def build_skin_profile(img_path, user_quiz):
     profile = user_quiz.copy()
-    predictions = predict_skin_attributes(img_path)
-    profile.update(predictions)
+    preds = predict_skin_attributes(img_path)
+    profile.update(preds)
     return profile
 
 
 # --------------------------------------------------------
-# 5. Knowledge Base (Dermatology Ingredients)
+# 6. Knowledge base
 # --------------------------------------------------------
 knowledge_base = {
     "wrinkles": {
@@ -345,27 +366,25 @@ knowledge_base = {
 
 
 # --------------------------------------------------------
-# 6. Ingredient Recommendation Logic
+# 7. Ingredient Recommendation
 # --------------------------------------------------------
 def get_ingredients(profile, kb):
     recommended = []
 
     for concern, info in kb.items():
-        if profile.get(concern):  # concern is True
+        if profile.get(concern):  # if true concern
             if profile.get("sensitivity") == "high":
-                safe = [
-                    ing for ing in info["ingredients"]
-                    if ing not in info["avoid_if_sensitive"]
-                ]
+                safe = [ing for ing in info["ingredients"]
+                        if ing not in info["avoid_if_sensitive"]]
                 recommended += safe
             else:
                 recommended += info["ingredients"]
 
-    return list(set(recommended))  # unique
+    return list(set(recommended))
 
 
 # --------------------------------------------------------
-# 7. Sample Products
+# 8. Product dataset
 # --------------------------------------------------------
 products = pd.DataFrame([
     {"name":"The Ordinary Retinol 0.5%", "ingredients":["retinol"], "price":750, "rating":4.5, "preferences":["fragrance-free"]},
@@ -390,13 +409,12 @@ products = pd.DataFrame([
 
 
 # --------------------------------------------------------
-# 8. Product Recommendation
+# 9. Product Recommendation Logic
 # --------------------------------------------------------
 def recommend_products(profile, ingredients, df):
     df = df[df["ingredients"].apply(lambda ing: any(i in ingredients for i in ing))]
     df = df[df["price"] <= profile.get("budget", 5000)]
 
-    # filter by user preferences
     prefs = profile.get("preferences", [])
     if prefs:
         df = df[df["preferences"].apply(lambda p: all(x in p for x in prefs) or not p)]
